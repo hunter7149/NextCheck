@@ -14,22 +14,22 @@ class SplashscreenView extends GetView<SplashscreenController> {
   Widget build(BuildContext context) {
     Timer(Duration(seconds: 2), () {
       // controller.checkLoginStatus();
-    Get.offNamed(Routes.HOME);
-   
-
+      Get.offNamed(Routes.LOGINSCREEN);
     });
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-            gradient: LinearGradient(
-                end: Alignment.topRight,
-                begin: Alignment.bottomLeft,
-                colors: [
+          gradient: LinearGradient(
+            end: Alignment.topRight,
+            begin: Alignment.bottomLeft,
+            colors: [
               Color.fromARGB(255, 2, 33, 48),
               Colors.black,
               // Colors.blueGrey.shade900,
-              Color.fromARGB(255, 2, 33, 48)
-            ])),
+              Color.fromARGB(255, 2, 33, 48),
+            ],
+          ),
+        ),
         // color: AppColors.modernBlue,
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -44,15 +44,16 @@ class SplashscreenView extends GetView<SplashscreenController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SlideTransition(
-                    position: Tween<Offset>(
-                      begin: Offset(0, 1), // Start position (bottom)
-                      end: Offset.zero, // End position (center)
-                    ).animate(
-                      CurvedAnimation(
-                        curve: Curves.fastLinearToSlowEaseIn,
-                        parent: controller.animationController,
-                      ),
-                    ),
+                    position:
+                        Tween<Offset>(
+                          begin: Offset(0, 1), // Start position (bottom)
+                          end: Offset.zero, // End position (center)
+                        ).animate(
+                          CurvedAnimation(
+                            curve: Curves.fastLinearToSlowEaseIn,
+                            parent: controller.animationController,
+                          ),
+                        ),
                     child: AnimatedContainer(
                       duration: Duration(seconds: 1),
                       padding: EdgeInsets.symmetric(horizontal: 40),
@@ -67,14 +68,15 @@ class SplashscreenView extends GetView<SplashscreenController> {
               ),
             ),
             Positioned(
-                left: 0,
-                right: 0,
-                bottom: 20,
-                child: Text(
-                  "V 1.0.1",
-                  style: GoogleFonts.poppins(color: Colors.grey.shade500),
-                  textAlign: TextAlign.center,
-                ))
+              left: 0,
+              right: 0,
+              bottom: 20,
+              child: Text(
+                "V 1.0.1",
+                style: GoogleFonts.poppins(color: Colors.grey.shade500),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       ),

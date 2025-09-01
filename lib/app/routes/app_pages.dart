@@ -8,6 +8,10 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/liveusers/bindings/liveusers_binding.dart';
 import '../modules/liveusers/views/liveusers_view.dart';
+import '../modules/loginscreen/bindings/loginscreen_binding.dart';
+import '../modules/loginscreen/views/loginscreen_view.dart';
+import '../modules/signup/bindings/signup_binding.dart';
+import '../modules/signup/views/signup_view.dart';
 import '../modules/splashscreen/bindings/splashscreen_binding.dart';
 import '../modules/splashscreen/views/splashscreen_view.dart';
 
@@ -43,6 +47,16 @@ class AppPages {
       name: _Paths.CREATEPOINT,
       page: () => const CreatepointView(),
       binding: CreatepointBinding(),
+    ),
+    GetPage(
+      name: _Paths.LOGINSCREEN,
+      page: () => const LoginscreenView(),
+      binding: LoginscreenBinding(),
+    ),
+    GetPage(
+      name: _Paths.SIGNUP,
+      page: () => const SignupView(),
+      binding: SignupBinding(),
     ),
   ];
 }

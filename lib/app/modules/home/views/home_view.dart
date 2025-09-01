@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:next_check/app/Colors/appcolors.dart';
+import 'package:next_check/app/Widgets/customwidgets.dart';
 import 'package:next_check/app/routes/app_pages.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
@@ -13,38 +15,22 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: AppColors.backGroundGradientBlack(),
+        ),
         child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.black,
-                Colors.indigo.shade900,
-                Colors.blue.shade900,
-                Colors.grey.shade900,
-              ],
-            ),
-          ),
-          child: Container(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [topAnimatedLogo(), titleandSlogan()],
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 0,
-                  left: 0,
-                  child: checkInButton(),
-                ),
-              ],
-            ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [topAnimatedLogo(), titleandSlogan()],
+              ),
+              Positioned(bottom: 10, right: 0, left: 0, child: checkInButton()),
+            ],
           ),
         ),
       ),
@@ -91,7 +77,7 @@ class HomeView extends GetView<HomeController> {
 
   checkInButton() {
     return ZoomTapAnimation(
-      onTap: (){
+      onTap: () {
         Get.toNamed(Routes.CHECKIN);
       },
       child: Container(
