@@ -837,6 +837,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.3"
+  zo_animated_border:
+    dependency: "direct main"
+    description:
+      name: zo_animated_border
+      sha256: cff6eb92b3b714618fa9fd6f268d1cf1daf30190ef23b4da085c97ca35ffa03d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   zoom_tap_animation:
     dependency: "direct main"
     description:

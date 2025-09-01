@@ -1,72 +1,104 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:next_check/app/Colors/appcolors.dart';
-
 import 'package:next_check/app/routes/app_pages.dart';
+import 'package:zo_animated_border/zo_animated_border.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
+        width: size.width,
+        height: size.height,
         decoration: BoxDecoration(
           gradient: AppColors.backGroundGradientBlack(),
         ),
-        child: Container(
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isLargeScreen = constraints.maxWidth > 600;
+              return Stack(
+                alignment: Alignment.center,
                 children: [
-                  topAnimatedLogo(),
-                  titleandSlogan(),
-                  SizedBox(height: 50),
-                  Obx(
-                    () => controller.role == 'host'
-                        ? Column(
-                            children: [
-                              createCheckInButton(),
-                              activeUsersButton(),
-                              checkInButton(),
-                            ],
-                          )
-                        : checkInButton(),
+                  Positioned(
+                    top: isLargeScreen ? 80 : 40,
+                    right: 24,
+                    left: 24,
+                    bottom: 0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const _AnimatedLogo(),
+                        const SizedBox(height: 24),
+                        const _TitleAndSlogan(),
+                        const SizedBox(height: 32),
+                        Obx(
+                          () => controller.role == 'host'
+                              ? Column(
+                                  children: [
+                                    _ActionButton(
+                                      label: "Create Check in point",
+                                      onTap: () =>
+                                          Get.toNamed(Routes.CREATEPOINT),
+                                    ),
+                                    _ActionButton(
+                                      label: "Active Users",
+                                      onTap: () =>
+                                          Get.toNamed(Routes.ACTIVEUSERS),
+                                    ),
+                                    _ActionButton(
+                                      label: "Check in",
+                                      onTap: () => Get.toNamed(Routes.CHECKIN),
+                                    ),
+                                  ],
+                                )
+                              : _ActionButton(
+                                  label: "Check in",
+                                  onTap: () => Get.toNamed(Routes.CHECKIN),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    top: isLargeScreen ? 40 : 20,
+                    right: 16,
+                    child: const _UserSection(),
                   ),
                 ],
-              ),
-
-              Positioned(
-                top: 60,
-                right: 10,
-                // left: 0,
-                child: userSection(),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
     );
   }
+}
 
-  userSection() {
+class _UserSection extends GetView<HomeController> {
+  const _UserSection();
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "${controller.email}",
+              controller.email.value ?? '',
               style: GoogleFonts.poppins(
                 color: Colors.white70,
                 fontSize: 18,
@@ -74,9 +106,9 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             Text(
-              "${controller.role}",
+              controller.role.value ?? '',
               style: GoogleFonts.poppins(
-                color: Colors.white70,
+                color: Colors.white54,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
               ),
@@ -84,37 +116,55 @@ class HomeView extends GetView<HomeController> {
             ),
           ],
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 12),
         ZoomTapAnimation(
           onTap: () {
             controller.auth.signOut();
             Get.offAllNamed(Routes.LOGINSCREEN);
           },
-          child: Icon(CupertinoIcons.power, color: Colors.deepOrange, size: 30),
+          child: const Icon(
+            CupertinoIcons.power,
+            color: Colors.deepOrange,
+            size: 28,
+          ),
         ),
       ],
     );
   }
+}
 
-  topAnimatedLogo() {
-    return Container(
-      height: 350,
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(250),
-        color: Colors.black45,
-      ),
-      child: Lottie.asset(
-        // height: 300,
-        key: UniqueKey(),
-        "assets/images/worldwide.json",
-        repeat: true,
+class _AnimatedLogo extends StatelessWidget {
+  const _AnimatedLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final logoSize = size.width * 0.55 > 350 ? 350.0 : size.width * 0.55;
+
+    return ZoAnimatedGradientBorder(
+      borderRadius: logoSize / 2,
+      borderThickness: 1.5,
+      gradientColor: AppColors.mainBackgroud,
+      animationDuration: const Duration(seconds: 4),
+      child: Container(
+        height: logoSize,
+        width: logoSize,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(logoSize / 2),
+          color: Colors.black38,
+        ),
+        child: Lottie.asset("assets/images/worldwide.json", repeat: true),
       ),
     );
   }
+}
 
-  titleandSlogan() {
+class _TitleAndSlogan extends StatelessWidget {
+  const _TitleAndSlogan();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Text(
@@ -123,83 +173,61 @@ class HomeView extends GetView<HomeController> {
             color: Colors.white,
             fontSize: 30,
             fontWeight: FontWeight.bold,
+            letterSpacing: 2,
           ),
         ),
+        const SizedBox(height: 8),
         Text(
           "Proving Presence in Real Time",
-          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 20),
+          style: GoogleFonts.poppins(
+            color: Colors.white70,
+            fontSize: 20,
+            fontWeight: FontWeight.w400,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
     );
   }
+}
 
-  checkInButton() {
-    return ZoomTapAnimation(
-      onTap: () {
-        Get.toNamed(Routes.CHECKIN);
-      },
-      child: Container(
-        height: 50,
-        width: double.maxFinite,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black87,
-        ),
-        child: Center(
-          child: Text(
-            "Check in",
-            style: TextStyle(color: Colors.white, fontSize: 18),
-            textAlign: TextAlign.center,
+class _ActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _ActionButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: ZoomTapAnimation(
+        onTap: onTap,
+        child: Container(
+          height: 50,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.black.withOpacity(0.85),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
-        ),
-      ),
-    );
-  }
-
-  createCheckInButton() {
-    return ZoomTapAnimation(
-      onTap: () {
-        Get.toNamed(Routes.CREATEPOINT);
-      },
-      child: Container(
-        height: 50,
-        width: double.maxFinite,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black87,
-        ),
-        child: Center(
-          child: Text(
-            "Create Check in point",
-            style: TextStyle(color: Colors.white, fontSize: 18),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  }
-
-  activeUsersButton() {
-    return ZoomTapAnimation(
-      onTap: () {
-        Get.toNamed(Routes.ACTIVEUSERS);
-      },
-      child: Container(
-        height: 50,
-        width: double.maxFinite,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Colors.black87,
-        ),
-        child: Center(
-          child: Text(
-            "Active Users",
-            style: TextStyle(color: Colors.white, fontSize: 18),
-            textAlign: TextAlign.center,
+          child: Center(
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1,
+              ),
+            ),
           ),
         ),
       ),

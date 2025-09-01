@@ -188,6 +188,7 @@ class CustomWidget {
               ctx,
             ).copyWith(textScaler: TextScaler.linear(1.0)),
             child: AlertDialog(
+              backgroundColor: Colors.blueGrey.shade900,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -215,9 +216,10 @@ class CustomWidget {
                         ),
                         Text(
                           "${message}",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w500,
                             fontSize: 18,
+                            color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -275,7 +277,7 @@ class CustomWidget {
               contentPadding: EdgeInsets.zero,
               content: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black87,
+                  color: Colors.black12,
                   borderRadius: BorderRadius.circular(5),
                 ),
                 height: 250,

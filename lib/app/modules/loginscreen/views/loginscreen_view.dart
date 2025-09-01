@@ -2,189 +2,214 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:next_check/app/Colors/appcolors.dart';
-import 'package:next_check/app/Widgets/customwidgets.dart';
-import 'package:next_check/app/routes/app_pages.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../controllers/loginscreen_controller.dart';
+import 'package:next_check/app/Colors/appcolors.dart';
+import 'package:next_check/app/routes/app_pages.dart';
 
 class LoginscreenView extends GetView<LoginscreenController> {
   const LoginscreenView({super.key});
+
+  static const double _horizontalPadding = 28.0;
+  static const double _fieldHeight = 50.0;
+
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+
     return Scaffold(
       body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.symmetric(horizontal: 32),
-        clipBehavior: Clip.antiAlias,
+        width: size.width,
+        height: size.height,
+        padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
         decoration: BoxDecoration(
           gradient: AppColors.backGroundGradientBlack(),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            topTitle(),
-            vSpace(),
-            userIdTextField(controller: controller.emailController),
-            vSpace(20),
-            userPasswordTextField(
-              passwordcontroller: controller.passwordController,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _topTitle(),
+                const SizedBox(height: 40),
+                _buildTextField(
+                  controller: controller.emailController,
+                  hint: "Email",
+                  icon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 20),
+                Obx(
+                  () => _buildTextField(
+                    controller: controller.passwordController,
+                    hint: "Password",
+                    isPassword: true,
+                    isObscure: controller.isObsecure.value,
+                    toggleObscure: () => controller.obsecureUpdater(
+                      value: !controller.isObsecure.value,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Obx(() {
+                  return controller.isSigning.value
+                      ? const SizedBox(
+                          height: _fieldHeight,
+                          child: Center(
+                            child: SpinKitPulse(color: Colors.white, size: 40),
+                          ),
+                        )
+                      : _loginButton();
+                }),
+                const SizedBox(height: 25),
+                _forgotPasswordText(),
+                const SizedBox(height: 25),
+                _signupText(),
+              ],
             ),
-            vSpace(),
-            Obx(
-              () => controller.isSigning.value
-                  ? Container(
-                      height: 40,
-                      width: 80,
-                      color: Colors.black,
-                      child: SpinKitPulse(color: Colors.white, size: 40),
-                    )
-                  : loginButton(),
-            ),
-            vSpace(),
-            signupText(),
-            vSpace(20),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  topTitle() {
-    return SizedBox(
-      // width: 250.0,
-      child: DefaultTextStyle(
-        textAlign: TextAlign.center,
-        style: GoogleFonts.poppins(fontSize: 46, color: Colors.white),
-        child: AnimatedTextKit(
-          // isRepeatingAnimation: true,
-          animatedTexts: [
-            ColorizeAnimatedText(
-              'Welcome',
-              textStyle: GoogleFonts.poppins(
-                fontSize: 46,
-                // color: Colors.white,
-              ),
-              speed: Duration(milliseconds: 1000),
-              textAlign: TextAlign.center,
+  /// Top Welcome Title
+  Widget _topTitle() {
+    return DefaultTextStyle(
+      textAlign: TextAlign.center,
+      style: GoogleFonts.poppins(
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+      child: AnimatedTextKit(
+        animatedTexts: [
+          ColorizeAnimatedText(
+            'Welcome Back',
+            textStyle: GoogleFonts.poppins(fontSize: 40),
+            speed: const Duration(milliseconds: 1200),
+            colors: [Colors.blue, Colors.purple, Colors.pink],
+          ),
+        ],
+        repeatForever: true,
+      ),
+    );
+  }
 
-              //
-              colors: [Colors.blue, Colors.purple, Colors.pink],
-            ),
-          ],
-          repeatForever: true,
-          // onFinished: () => controller.checkLoginStatus(),
+  /// Text Field Builder
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    IconData? icon,
+    bool isPassword = false,
+    bool isObscure = false,
+    VoidCallback? toggleObscure,
+  }) {
+    return Container(
+      height: _fieldHeight,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: TextField(
+        style: const TextStyle(color: Colors.white),
+        textAlignVertical: TextAlignVertical.center,
+        controller: controller,
+        obscureText: isPassword ? isObscure : false,
+        decoration: InputDecoration(
+          prefixIcon: icon != null ? Icon(icon, color: Colors.white70) : null,
+          suffixIcon: isPassword
+              ? GestureDetector(
+                  onTap: toggleObscure,
+                  child: Icon(
+                    isObscure ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.white70,
+                  ),
+                )
+              : null,
+          hintStyle: GoogleFonts.poppins(
+            color: Colors.white54,
+            fontWeight: FontWeight.w300,
+          ),
+          hintText: hint,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
       ),
     );
   }
 
-  vSpace([double? height]) {
-    return SizedBox(height: height != null ? height : 20);
+  /// Login Button
+  Widget _loginButton() {
+    return ZoomTapAnimation(
+      onTap: controller.loginProccess,
+      child: Container(
+        height: _fieldHeight,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Colors.blue, Colors.purple],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Text(
+            "Login",
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
-  signupText() {
+  /// Signup Text
+  Widget _signupText() {
     return RichText(
       text: TextSpan(
-        text: "Don't have an account? ",
-        style: GoogleFonts.poppins(
-          color: Colors.white70,
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-        ),
+        text: "Don’t have an account? ",
+        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
         children: [
           TextSpan(
-            recognizer: TapGestureRecognizer()
-              ..onTap = () {
-                Get.toNamed(Routes.SIGNUP);
-              },
             text: "Sign up",
             style: GoogleFonts.poppins(
-              color: Colors.blue,
-              fontSize: 16,
+              color: Colors.blueAccent,
+              fontSize: 15,
               fontWeight: FontWeight.w600,
-              // decoration: TextDecoration.underline,
             ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => Get.toNamed(Routes.SIGNUP),
           ),
         ],
       ),
     );
   }
 
-  loginButton() {
-    return ZoomTapAnimation(
-      onTap: () {
-        controller.loginProccess();
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.blue.shade900,
-          borderRadius: BorderRadius.circular(2),
-        ),
-        child: Text("Login", style: GoogleFonts.poppins(color: Colors.white)),
-      ),
-    );
-  }
-
-  userIdTextField({required TextEditingController controller}) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(color: Colors.blueGrey.shade900),
-      child: TextField(
-        style: TextStyle(color: Colors.white),
-        textAlignVertical: TextAlignVertical.center,
-
-        controller: controller,
-        // obscureText: controller.isObsecure.value,
-        decoration: InputDecoration(
-          hintStyle: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w200,
-          ),
-          alignLabelWithHint: true,
-          hintText: "Email", // Add placeholder text
-          border: InputBorder.none, // Hide the default TextField border
-          contentPadding: EdgeInsets.all(10), // Padding
-        ),
-      ),
-    );
-  }
-
-  userPasswordTextField({required TextEditingController passwordcontroller}) {
-    return Container(
-      height: 40,
-      decoration: BoxDecoration(color: Colors.blueGrey.shade900),
-      child: TextField(
-        style: TextStyle(color: Colors.white),
-        textAlignVertical: TextAlignVertical.center,
-        enabled: true,
-        controller: passwordcontroller,
-        obscureText: controller.isObsecure.value,
-        decoration: InputDecoration(
-          suffixIcon: ZoomTapAnimation(
-            onTap: () {
-              controller.obsecureUpdater(value: !controller.isObsecure.value);
-            },
-            child: Icon(
-              controller.isObsecure.value
-                  ? Icons.visibility
-                  : Icons.visibility_off,
-              color: Colors.black,
-            ),
-          ),
-          hintStyle: GoogleFonts.poppins(
-            color: Colors.white,
-            fontWeight: FontWeight.w200,
-          ),
-          hintText: "Password", // Add placeholder text
-          border: InputBorder.none, // Hide the default TextField border
-          contentPadding: EdgeInsets.all(10), // Padding
+  /// Forgot Password
+  Widget _forgotPasswordText() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          // TODO: Forgot password logic
+        },
+        child: Text(
+          "Forgot Password?",
+          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
         ),
       ),
     );

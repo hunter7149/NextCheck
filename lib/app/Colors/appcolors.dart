@@ -24,7 +24,7 @@ class AppColors {
       begin: Alignment.bottomLeft,
       colors: [
         Color.fromARGB(255, 2, 33, 48),
-        Colors.black,
+        const Color.fromARGB(255, 1, 19, 57),
         // Colors.blueGrey.shade900,
         Color.fromARGB(255, 2, 33, 48),
       ],

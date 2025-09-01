@@ -52,7 +52,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.LOGINSCREEN,
-      page: () => const LoginscreenView(),
+      page: () => LoginscreenView(),
       binding: LoginscreenBinding(),
     ),
     GetPage(

@@ -22,6 +22,7 @@ dependencies:
   zoom_tap_animation: ^1.1.0
   get_storage: ^2.1.1
   intl: ^0.19.0
+  zo_animated_border: ^1.0.1
   google_fonts: ^6.1.0
   animated_text_kit: ^4.2.3
   flutter_spinkit: ^5.2.1
