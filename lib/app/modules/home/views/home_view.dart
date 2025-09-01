@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
+import 'package:next_check/app/routes/app_pages.dart';
+import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -88,19 +90,24 @@ class HomeView extends GetView<HomeController> {
   }
 
   checkInButton() {
-    return Container(
-      height: 50,
-      width: double.maxFinite,
-      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.black87,
-      ),
-      child: Center(
-        child: Text(
-          "Check in",
-          style: TextStyle(color: Colors.white, fontSize: 18),
-          textAlign: TextAlign.center,
+    return ZoomTapAnimation(
+      onTap: (){
+        Get.toNamed(Routes.CHECKIN);
+      },
+      child: Container(
+        height: 50,
+        width: double.maxFinite,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black87,
+        ),
+        child: Center(
+          child: Text(
+            "Check in",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
