@@ -64,7 +64,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
                       : _loginButton();
                 }),
                 const SizedBox(height: 25),
-                _forgotPasswordText(),
+                // _forgotPasswordText(),
                 const SizedBox(height: 25),
                 _signupText(),
               ],
