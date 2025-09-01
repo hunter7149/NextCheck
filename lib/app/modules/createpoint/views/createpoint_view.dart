@@ -16,20 +16,26 @@ class CreatepointView extends GetView<CreatepointController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: AppColors.backGroundGradientBlack(),
-          ),
-          child: Obx(
-            () => controller.initialCameraPosition.value == null
-                ? const Center(
-                    child: SpinKitThreeBounce(color: Colors.white, size: 60),
-                  )
-                : Stack(
-                    children: [
-                      Obx(
+      // backgroundColor: Colors.black,
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: AppColors.backGroundGradientBlack(),
+        ),
+        child: Obx(
+          () => controller.initialCameraPosition.value == null
+              ? const Center(
+                  child: SpinKitThreeBounce(color: Colors.white, size: 60),
+                )
+              : Stack(
+                  children: [
+                    Positioned(
+                      top: 20,
+                      right: 0,
+                      bottom: 0,
+                      left: 0,
+                      child: Obx(
                         () => GoogleMap(
                           myLocationEnabled: true,
                           initialCameraPosition:
@@ -42,88 +48,93 @@ class CreatepointView extends GetView<CreatepointController> {
                                     .complete(mapController)),
                         ),
                       ),
-                      Positioned(
-                        bottom: 20,
-                        left: 20,
-                        right: 20,
-                        child: ZoomTapAnimation(
-                          onTap: () async {
-                            if (controller.selectedLocation == null) {
-                              CustomWidget.errorAlert(
-                                title: "Opps!",
-                                message:
-                                    "Please select a location on the map first.",
-                              );
-                              return;
-                            }
-
-                            // Show dialog to enter radius
-                            double? radius = await showDialog<double>(
-                              context: context,
-                              builder: (context) {
-                                final TextEditingController radiusController =
-                                    TextEditingController();
-                                return AlertDialog(
-                                  title: const Text('Enter Radius (meters)'),
-                                  content: TextField(
-                                    controller: radiusController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Radius in meters',
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        final value = double.tryParse(
-                                          radiusController.text,
-                                        );
-                                        Navigator.of(context).pop(value);
-                                      },
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                );
-                              },
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      right: 20,
+                      child: ZoomTapAnimation(
+                        onTap: () async {
+                          if (controller.selectedLocation == null) {
+                            CustomWidget.errorAlert(
+                              title: "Opps!",
+                              message:
+                                  "Please select a location on the map first.",
                             );
+                            return;
+                          }
 
-                            if (radius != null && radius > 0) {
-                              await controller.createActiveCheckinPoint(
-                                controller.selectedLocation!,
-                                radius,
+                          // Show dialog to enter radius
+                          double? radius = await showDialog<double>(
+                            context: context,
+                            builder: (context) {
+                              final TextEditingController radiusController =
+                                  TextEditingController();
+                              return AlertDialog(
+                                title: const Text('Enter Radius (meters)'),
+                                content: TextField(
+                                  controller: radiusController,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Radius in meters',
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      final value = double.tryParse(
+                                        radiusController.text,
+                                      );
+                                      Navigator.of(context).pop(value);
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
                               );
-                              CustomWidget.successAlert2(
-                                message: "Check-in point created successfully",
-                              );
-                            }
-                          },
-                          child: Container(
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            alignment: Alignment.center,
-                            child: Text(
-                              "Create Check-in Point",
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            },
+                          );
+
+                          if (radius != null && radius > 0) {
+                            await controller.createActiveCheckinPoint(
+                              controller.selectedLocation!,
+                              radius,
+                            );
+                            CustomWidget.successAlert2(
+                              message: "Check-in point created successfully",
+                            );
+                          }
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Create Check-in Point",
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
-                      Positioned(child: CustomWidget.commonBackButton()),
-                    ],
-                  ),
-          ),
+                    ),
+                    Positioned(
+                      top: 60,
+
+                      left: 0,
+                      child: CustomWidget.commonBackButton(),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

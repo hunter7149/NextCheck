@@ -27,19 +27,25 @@ class HomeView extends GetView<HomeController> {
             alignment: Alignment.center,
             children: [
               Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [topAnimatedLogo(), titleandSlogan()],
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  topAnimatedLogo(),
+                  titleandSlogan(),
+                  SizedBox(height: 50),
+                  Obx(
+                    () => controller.role == 'host'
+                        ? Column(
+                            children: [
+                              createCheckInButton(),
+                              activeUsersButton(),
+                              checkInButton(),
+                            ],
+                          )
+                        : checkInButton(),
+                  ),
+                ],
               ),
-              Positioned(
-                bottom: 10,
-                right: 0,
-                left: 0,
-                child: Obx(
-                  () => controller.role == 'host'
-                      ? createCheckInButton()
-                      : checkInButton(),
-                ),
-              ),
+
               Positioned(
                 top: 60,
                 right: 10,
@@ -136,7 +142,7 @@ class HomeView extends GetView<HomeController> {
       child: Container(
         height: 50,
         width: double.maxFinite,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.black87,
@@ -160,7 +166,7 @@ class HomeView extends GetView<HomeController> {
       child: Container(
         height: 50,
         width: double.maxFinite,
-        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: Colors.black87,
@@ -168,6 +174,30 @@ class HomeView extends GetView<HomeController> {
         child: Center(
           child: Text(
             "Create Check in point",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  activeUsersButton() {
+    return ZoomTapAnimation(
+      onTap: () {
+        Get.toNamed(Routes.ACTIVEUSERS);
+      },
+      child: Container(
+        height: 50,
+        width: double.maxFinite,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black87,
+        ),
+        child: Center(
+          child: Text(
+            "Active Users",
             style: TextStyle(color: Colors.white, fontSize: 18),
             textAlign: TextAlign.center,
           ),
