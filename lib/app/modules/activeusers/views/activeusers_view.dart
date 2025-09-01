@@ -86,32 +86,6 @@ class ActiveusersView extends GetView<ActiveusersController> {
                   ],
                 ),
               );
-              //  ListTile(
-              //   tileColor: Colors.white,
-
-              //   style: ListTileStyle.drawer,
-              //   // leading: Icon(Icons.person, color: Colors.green),
-              //   // title: Text("Participant ${participant['id']}"),
-              //   // subtitle: Text(
-              //   //   "Lat: ${participant['lat']}, Lng: ${participant['lng']}",
-              //   // ),
-              //   // trailing: Text(
-              //   //   "Checked in: ${DateTime.fromMillisecondsSinceEpoch(participant['checkInTime'])}",
-              //   // ),
-              //   leading: Icon(Icons.person, color: Colors.green),
-              //   title: Text(
-              //     "Participant ",
-              //     style: TextStyle(color: Colors.white70),
-              //   ),
-              //   subtitle: Text(
-              //     "Lat: ${"123.2121"}, Lng: ${"87.12312"}",
-              //     style: TextStyle(color: Colors.white70),
-              //   ),
-              //   trailing: Text(
-              //     "Checked in: ${DateTime.fromMillisecondsSinceEpoch(DateTime.friday)}",
-              //     style: TextStyle(color: Colors.white70),
-              //   ),
-              // );
             },
           );
         }),
