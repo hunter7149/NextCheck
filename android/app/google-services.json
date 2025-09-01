@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "334034605461",
+    "project_id": "nexcheck-165b8",
+    "storage_bucket": "nexcheck-165b8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334034605461:android:dcb0f8dac1de676624529c",
+        "android_client_info": {
+          "package_name": "com.example.next_check"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfDUr_3rkWnWTDK3iUafYC6U2wwSyjHO4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

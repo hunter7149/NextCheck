@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -9,14 +11,96 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('HomeView'),
-        centerTitle: true,
+      body: SafeArea(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.black,
+                Colors.indigo.shade900,
+                Colors.blue.shade900,
+                Colors.grey.shade900,
+              ],
+            ),
+          ),
+          child: Container(
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [topAnimatedLogo(), titleandSlogan()],
+                ),
+                Positioned(
+                  bottom: 10,
+                  right: 0,
+                  left: 0,
+                  child: checkInButton(),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
-      body: const Center(
+    );
+  }
+
+  topAnimatedLogo() {
+    return Container(
+      height: 350,
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(250),
+        color: Colors.black45,
+      ),
+      child: Lottie.asset(
+        // height: 300,
+        key: UniqueKey(),
+        "assets/images/worldwide.json",
+        repeat: true,
+      ),
+    );
+  }
+
+  titleandSlogan() {
+    return Column(
+      children: [
+        Text(
+          "NEXTCHECK",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          "Proving Presence in Real Time",
+          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 20),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  checkInButton() {
+    return Container(
+      height: 50,
+      width: double.maxFinite,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.black87,
+      ),
+      child: Center(
         child: Text(
-          'HomeView is working',
-          style: TextStyle(fontSize: 20),
+          "Check in",
+          style: TextStyle(color: Colors.white, fontSize: 18),
+          textAlign: TextAlign.center,
         ),
       ),
     );
