@@ -140,6 +140,7 @@ class SignupView extends GetView<SignupController> {
       height: 40,
       decoration: BoxDecoration(color: Colors.blueGrey.shade900),
       child: TextField(
+        style: TextStyle(color: Colors.white),
         textAlignVertical: TextAlignVertical.center,
 
         controller: controller,
@@ -163,6 +164,7 @@ class SignupView extends GetView<SignupController> {
       height: 40,
       decoration: BoxDecoration(color: Colors.blueGrey.shade900),
       child: TextField(
+        style: TextStyle(color: Colors.white),
         textAlignVertical: TextAlignVertical.center,
         enabled: true,
         controller: passwordcontroller,
@@ -203,10 +205,10 @@ class SignupView extends GetView<SignupController> {
             value: controller.role.value,
             dropdownColor: Colors.blueGrey.shade900,
             style: GoogleFonts.poppins(
-              color: Colors.white,
+              color: Colors.blue,
               fontWeight: FontWeight.w400,
             ),
-            icon: Icon(Icons.arrow_drop_down, color: Colors.white),
+            icon: Icon(Icons.arrow_drop_down, color: Colors.black),
             items: ["host", "participant"]
                 .map(
                   (r) => DropdownMenuItem(
@@ -214,7 +216,7 @@ class SignupView extends GetView<SignupController> {
                     child: Text(
                       r[0].toUpperCase() + r.substring(1),
                       style: GoogleFonts.poppins(
-                        color: Colors.white,
+                        color: Colors.blue,
                         fontWeight: FontWeight.w400,
                       ),
                     ),

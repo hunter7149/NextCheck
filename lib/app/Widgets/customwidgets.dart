@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -259,91 +261,94 @@ class CustomWidget {
   static Future<void> errorAlert({
     required String title,
     required String message,
-    double? height,
   }) async {
     // Ensure we have a valid context using Get.context
     if (Get.context != null) {
       // Show a dialog popup
       showDialog(
         context: Get.context!,
-        barrierDismissible:
-            false, // Prevents closing the dialog by tapping outside
+        barrierDismissible: true,
         builder: (BuildContext context) {
-          return AlertDialog(
-            contentPadding: EdgeInsets.zero,
-
-            // title: Text(title, style: TextStyle(color: Colors.white)),
-            content: Container(
-              height: height ?? 250,
-
-              // padding: EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: Colors.red.shade700,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(Icons.error, size: 40, color: Colors.white),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            message,
-                            style: TextStyle(color: Colors.white, fontSize: 16),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  ZoomTapAnimation(
-                    onTap: () {
-                      // if (Get.isDialogOpen!) {
-                      Get.back(); // Closes the dialog
-                      // }
-                    },
-                    child: Container(
-                      height: 30,
-                      width: 100,
+          return BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+            child: AlertDialog(
+              contentPadding: EdgeInsets.zero,
+              content: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                height: 250,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.red.shade700,
-                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.red.shade800.withAlpha(100),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(5),
+                          topRight: Radius.circular(5),
+                        ),
                       ),
                       child: Center(
-                        child: Text(
-                          "Okay",
-                          style: TextStyle(color: Colors.white),
+                        child: Icon(Icons.error, size: 40, color: Colors.white),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              message,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ZoomTapAnimation(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Container(
+                        height: 30,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Colors.red.withAlpha(150),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            "Okay",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                ],
+                    SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ),
-            backgroundColor: Colors.blueGrey.shade900,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30)),
+              backgroundColor: Colors.black54,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
             ),
           );
         },
@@ -365,14 +370,14 @@ class CustomWidget {
       child: Container(
         // alignment: Alignment.center,
         margin: EdgeInsets.only(left: 10, top: 2),
-        height: 30,
-        width: 30,
+        height: 50,
+        width: 50,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: Colors.black87,
           borderRadius: BorderRadius.circular(100),
         ),
         child: Center(
-          child: Icon(Icons.arrow_back, size: 20, color: Colors.grey.shade600),
+          child: Icon(Icons.arrow_back, size: 30, color: Colors.white),
         ),
       ),
     );

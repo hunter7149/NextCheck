@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/activeusers/bindings/activeusers_binding.dart';
+import '../modules/activeusers/views/activeusers_view.dart';
 import '../modules/checkin/bindings/checkin_binding.dart';
 import '../modules/checkin/views/checkin_view.dart';
 import '../modules/createpoint/bindings/createpoint_binding.dart';
@@ -57,6 +59,11 @@ class AppPages {
       name: _Paths.SIGNUP,
       page: () => const SignupView(),
       binding: SignupBinding(),
+    ),
+    GetPage(
+      name: _Paths.ACTIVEUSERS,
+      page: () => const ActiveusersView(),
+      binding: ActiveusersBinding(),
     ),
   ];
 }

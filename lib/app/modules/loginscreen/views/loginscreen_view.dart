@@ -137,6 +137,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
       height: 40,
       decoration: BoxDecoration(color: Colors.blueGrey.shade900),
       child: TextField(
+        style: TextStyle(color: Colors.white),
         textAlignVertical: TextAlignVertical.center,
 
         controller: controller,
@@ -160,6 +161,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
       height: 40,
       decoration: BoxDecoration(color: Colors.blueGrey.shade900),
       child: TextField(
+        style: TextStyle(color: Colors.white),
         textAlignVertical: TextAlignVertical.center,
         enabled: true,
         controller: passwordcontroller,

@@ -1,10 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:next_check/app/Colors/appcolors.dart';
-import 'package:next_check/app/Widgets/customwidgets.dart';
+
 import 'package:next_check/app/routes/app_pages.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
@@ -29,11 +30,63 @@ class HomeView extends GetView<HomeController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [topAnimatedLogo(), titleandSlogan()],
               ),
-              Positioned(bottom: 10, right: 0, left: 0, child: checkInButton()),
+              Positioned(
+                bottom: 10,
+                right: 0,
+                left: 0,
+                child: Obx(
+                  () => controller.role == 'host'
+                      ? createCheckInButton()
+                      : checkInButton(),
+                ),
+              ),
+              Positioned(
+                top: 60,
+                right: 10,
+                // left: 0,
+                child: userSection(),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  userSection() {
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              "${controller.email}",
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Text(
+              "${controller.role}",
+              style: GoogleFonts.poppins(
+                color: Colors.white70,
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+              ),
+              textAlign: TextAlign.end,
+            ),
+          ],
+        ),
+        SizedBox(width: 10),
+        ZoomTapAnimation(
+          onTap: () {
+            controller.auth.signOut();
+            Get.offAllNamed(Routes.LOGINSCREEN);
+          },
+          child: Icon(CupertinoIcons.power, color: Colors.deepOrange, size: 30),
+        ),
+      ],
     );
   }
 
@@ -59,7 +112,7 @@ class HomeView extends GetView<HomeController> {
     return Column(
       children: [
         Text(
-          "NEXTCHECK",
+          "NEXT CHECK",
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 30,
@@ -91,6 +144,30 @@ class HomeView extends GetView<HomeController> {
         child: Center(
           child: Text(
             "Check in",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  createCheckInButton() {
+    return ZoomTapAnimation(
+      onTap: () {
+        Get.toNamed(Routes.CREATEPOINT);
+      },
+      child: Container(
+        height: 50,
+        width: double.maxFinite,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black87,
+        ),
+        child: Center(
+          child: Text(
+            "Create Check in point",
             style: TextStyle(color: Colors.white, fontSize: 18),
             textAlign: TextAlign.center,
           ),

@@ -95,11 +95,6 @@ class LoginscreenController extends GetxController {
     }
   }
 
-  // Logout
-  Future<void> logout() async {
-    await _auth.signOut();
-  }
-
   @override
   void onInit() {
     super.onInit();
