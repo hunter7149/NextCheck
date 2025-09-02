@@ -59,7 +59,37 @@ NextCheck is a **Flutter-based mobile application** that allows hosts to create 
    - Distance display from check-in point.
 
 ---
+- Create and manage **check-in points**  
+- Location-based check-in & auto-checkout  
+- Live updates of participant counts (refreshes every 30s)  
+- Secure sign-in (Firebase Auth)  
+- Reliable real-time sync with Firestore  
+- Production-ready Flutter + GetX architecture  
 
+---
+
+## User Guide
+
+### Getting Started
+1. Install the **NextCheck.apk** on your Android device.  
+2. Open the app and **sign in** (Google or Guest).  
+3. Start using check-in features.  
+
+### For Organizers
+- Tap **“Create Check-In Point”**  
+- Allow location access → app drops your GPS pin  
+- Enter **radius in meters** (e.g., 50m)  
+- Confirm → Check-in point goes live  
+
+### For Participants
+- Open app → see active check-in point  
+- If you’re inside the radius → press **Check In**  
+- You’ll appear in the real-time list  
+- Leaving the area = automatic **Check Out**  
+
+### Live Updates
+- Everyone sees number of participants checked in  
+- Updates every 30 seconds automatically  
 ## Installation
 
 1. **Clone the repository:**
