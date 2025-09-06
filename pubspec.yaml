@@ -1,9 +1,9 @@
 name: next_check
 description: "A new Flutter project for next venture."
 
-publish_to: 'Next venture' # Remove this line if you wish to publish to pub.dev
+publish_to: 'Next venture' 
 
-version: 1.0.0+2
+version: 2.0.0+3
 
 environment:
   sdk: ^3.8.1
