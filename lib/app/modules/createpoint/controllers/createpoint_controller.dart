@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:latlong2/latlong.dart' hide LatLng;
+import 'package:next_check/app/Widgets/customwidgets.dart';
 import 'package:next_check/app/data/strings/appstring.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
@@ -233,7 +234,9 @@ class CreatepointController extends GetxController {
     }
   }
 
+  RxBool isLocationSetting = false.obs;
   Future<void> createActiveCheckinPoint(LatLng location, double radius) async {
+    isLocationSetting(true);
     try {
       // Get the current host UID
       String hostId = FirebaseAuth.instance.currentUser!.uid;
@@ -250,10 +253,16 @@ class CreatepointController extends GetxController {
             'active': true,
           });
 
-      print("Check-in point created successfully!");
+      CustomWidget.successAlert2(
+        message: "Check-in point created successfully",
+      );
     } catch (e) {
-      print("Error creating check-in point: $e");
+      CustomWidget.errorAlert(
+        title: "Opps",
+        message: "Failed to create checkin point",
+      );
     }
+    isLocationSetting(false);
   }
 
   requestMap() async {

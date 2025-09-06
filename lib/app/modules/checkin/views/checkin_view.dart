@@ -92,7 +92,7 @@ class CheckinView extends GetView<CheckinController> {
                                     "${controller.liveCount.value}",
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: isPortrait ? 20.sp : 10.sp,
+                                      fontSize: isPortrait ? 16.sp : 8.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -139,7 +139,7 @@ class CheckinView extends GetView<CheckinController> {
                                         : "${controller.distanceFromActive.value.toStringAsFixed(0)}",
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: isPortrait ? 20.sp : 10.sp,
+                                      fontSize: isPortrait ? 16.sp : 8.sp,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -157,7 +157,7 @@ class CheckinView extends GetView<CheckinController> {
                                   Text(
                                     controller.distanceFromActive.value >= 1000
                                         ? "Km away"
-                                        : "Meters away" + "from location",
+                                        : "Meters away",
                                     style: TextStyle(
                                       color: Colors.white70,
                                       fontSize: isPortrait ? 14.sp : 8.sp,

@@ -30,18 +30,6 @@ class CustomWidget {
       margin: EdgeInsets.symmetric(horizontal: hMargin ?? 30, vertical: 10),
       // padding: EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        // boxShadow: [
-        //   haveShadow == null
-        //       ? BoxShadow(
-        //           color: Colors.grey.shade300,
-        //           offset: Offset(3, 6),
-        //           blurRadius: 5)
-        //       : haveShadow
-        //           ? BoxShadow(
-        //               color: Colors.grey.shade300,
-        //               offset: Offset(3, 6),
-        //               blurRadius: 5)
-        //           : BoxShadow()
         // ],
         color: color ?? Colors.white, // Set the background color to white
         borderRadius: BorderRadius.all(
@@ -188,9 +176,9 @@ class CustomWidget {
               ctx,
             ).copyWith(textScaler: TextScaler.linear(1.0)),
             child: AlertDialog(
-              backgroundColor: Colors.blueGrey.shade900,
+              backgroundColor: Colors.black87,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(10),
               ),
               content: Container(
                 height: 240,
@@ -234,7 +222,10 @@ class CustomWidget {
                             height: 40,
                             width: 120,
                             // width: 120,
-                            decoration: BoxDecoration(color: Colors.black),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: Center(
                               child: Text(
                                 "OKAY",
@@ -277,8 +268,8 @@ class CustomWidget {
               contentPadding: EdgeInsets.zero,
               content: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.circular(5),
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 height: 250,
                 child: Column(
@@ -287,7 +278,7 @@ class CustomWidget {
                     Container(
                       height: 60,
                       decoration: BoxDecoration(
-                        color: Colors.red.shade800.withAlpha(100),
+                        color: Colors.red.shade800.withAlpha(200),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(5),
                           topRight: Radius.circular(5),
