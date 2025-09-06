@@ -15,71 +15,61 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       body: Container(
-        width: size.width,
-        height: size.height,
+        width: double.infinity,
+        height: double.infinity,
         decoration: BoxDecoration(
           gradient: AppColors.backGroundGradientBlack(),
         ),
         child: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isLargeScreen = constraints.maxWidth > 600;
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned(
-                    top: isLargeScreen ? 80 : 40,
-                    right: 24,
-                    left: 24,
-                    bottom: 0,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const _AnimatedLogo(),
-                        const SizedBox(height: 24),
-                        const _TitleAndSlogan(),
-                        const SizedBox(height: 32),
-                        Obx(
-                          () => controller.role == 'host'
-                              ? Column(
-                                  children: [
-                                    _ActionButton(
-                                      label: "Create Check in point",
-                                      onTap: () =>
-                                          Get.toNamed(Routes.CREATEPOINT),
-                                    ),
-                                    _ActionButton(
-                                      label: "Active Users",
-                                      onTap: () =>
-                                          Get.toNamed(Routes.ACTIVEUSERS),
-                                    ),
-                                    _ActionButton(
-                                      label: "Check in",
-                                      onTap: () => Get.toNamed(Routes.CHECKIN),
-                                    ),
-                                  ],
-                                )
-                              : _ActionButton(
-                                  label: "Check in",
-                                  onTap: () => Get.toNamed(Routes.CHECKIN),
-                                ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    top: isLargeScreen ? 40 : 20,
-                    right: 16,
-                    child: const _UserSection(),
-                  ),
-                ],
-              );
-            },
+          child: Stack(
+            children: [
+              // Responsive main content
+              Center(
+                child: OrientationBuilder(
+                  builder: (context, orientation) {
+                    if (orientation == Orientation.portrait) {
+                      // 📱 Portrait layout
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const _AnimatedLogo(),
+                          const SizedBox(height: 24),
+                          const _TitleAndSlogan(),
+                          const SizedBox(height: 32),
+                          _ActionsSection(),
+                        ],
+                      );
+                    } else {
+                      // 💻 Landscape layout
+                      return Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Center(child: const _AnimatedLogo()),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const _TitleAndSlogan(),
+                                const SizedBox(height: 32),
+                                _ActionsSection(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ),
+
+              // 🔹 User info always top-right
+              Positioned(top: 16, right: 16, child: const _UserSection()),
+            ],
           ),
         ),
       ),
@@ -139,7 +129,7 @@ class _AnimatedLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final logoSize = size.width * 0.55 > 350 ? 350.0 : size.width * 0.55;
+    final logoSize = size.shortestSide * 0.5; // adapts to portrait/landscape
 
     return ZoAnimatedGradientBorder(
       borderRadius: logoSize / 2,
@@ -191,6 +181,35 @@ class _TitleAndSlogan extends StatelessWidget {
   }
 }
 
+class _ActionsSection extends GetView<HomeController> {
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => controller.role == 'host'
+          ? Column(
+              children: [
+                _ActionButton(
+                  label: "Create Check in point",
+                  onTap: () => Get.toNamed(Routes.CREATEPOINT),
+                ),
+                _ActionButton(
+                  label: "Active Users",
+                  onTap: () => Get.toNamed(Routes.ACTIVEUSERS),
+                ),
+                _ActionButton(
+                  label: "Check in",
+                  onTap: () => Get.toNamed(Routes.CHECKIN),
+                ),
+              ],
+            )
+          : _ActionButton(
+              label: "Check in",
+              onTap: () => Get.toNamed(Routes.CHECKIN),
+            ),
+    );
+  }
+}
+
 class _ActionButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
@@ -199,9 +218,8 @@ class _ActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16),
       child: ZoomTapAnimation(
         onTap: onTap,
         child: Container(

@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../controllers/loginscreen_controller.dart';
 import 'package:next_check/app/Colors/appcolors.dart';
@@ -13,61 +14,64 @@ import 'package:next_check/app/routes/app_pages.dart';
 class LoginscreenView extends GetView<LoginscreenController> {
   const LoginscreenView({super.key});
 
-  static const double _horizontalPadding = 28.0;
-  static const double _fieldHeight = 50.0;
-
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
       body: Container(
-        width: size.width,
-        height: size.height,
-        padding: const EdgeInsets.symmetric(horizontal: _horizontalPadding),
+        width: 1.sw,
+        height: 1.sh,
+        padding: EdgeInsets.symmetric(horizontal: 28.w),
         decoration: BoxDecoration(
           gradient: AppColors.backGroundGradientBlack(),
         ),
         child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _topTitle(),
-                const SizedBox(height: 40),
-                _buildTextField(
-                  controller: controller.emailController,
-                  hint: "Email",
-                  icon: Icons.email_outlined,
-                ),
-                const SizedBox(height: 20),
-                Obx(
-                  () => _buildTextField(
-                    controller: controller.passwordController,
-                    hint: "Password",
-                    isPassword: true,
-                    isObscure: controller.isObsecure.value,
-                    toggleObscure: () => controller.obsecureUpdater(
-                      value: !controller.isObsecure.value,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 500.w),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _topTitle(isPortrait: isPortrait),
+                  SizedBox(height: isPortrait ? 40.h : 20.h),
+                  _buildTextField(
+                    controller: controller.emailController,
+                    hint: "Email",
+                    isPortrait: isPortrait,
+                  ),
+                  SizedBox(height: isPortrait ? 20.h : 12.h),
+                  Obx(
+                    () => _buildTextField(
+                      isPortrait: isPortrait,
+                      controller: controller.passwordController,
+                      hint: "Password",
+                      isPassword: true,
+                      isObscure: controller.isObsecure.value,
+                      toggleObscure: () => controller.obsecureUpdater(
+                        value: !controller.isObsecure.value,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Obx(() {
-                  return controller.isSigning.value
-                      ? const SizedBox(
-                          height: _fieldHeight,
-                          child: Center(
-                            child: SpinKitPulse(color: Colors.white, size: 40),
-                          ),
-                        )
-                      : _loginButton();
-                }),
-                const SizedBox(height: 25),
-                // _forgotPasswordText(),
-                const SizedBox(height: 25),
-                _signupText(),
-              ],
+                  SizedBox(height: isPortrait ? 20.h : 12.h),
+                  Obx(() {
+                    return controller.isSigning.value
+                        ? SizedBox(
+                            height: 50.h,
+                            child: Center(
+                              child: SpinKitPulse(
+                                color: Colors.white,
+                                size: 40.sp,
+                              ),
+                            ),
+                          )
+                        : _loginButton(isPortrait: isPortrait);
+                  }),
+                  SizedBox(height: isPortrait ? 25.h : 15.h),
+                  _signupText(isPortrait: isPortrait),
+                ],
+              ),
             ),
           ),
         ),
@@ -76,11 +80,11 @@ class LoginscreenView extends GetView<LoginscreenController> {
   }
 
   /// Top Welcome Title
-  Widget _topTitle() {
+  Widget _topTitle({required bool isPortrait}) {
     return DefaultTextStyle(
       textAlign: TextAlign.center,
       style: GoogleFonts.poppins(
-        fontSize: 40,
+        fontSize: isPortrait ? 40.sp : 28.sp,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
@@ -88,7 +92,9 @@ class LoginscreenView extends GetView<LoginscreenController> {
         animatedTexts: [
           ColorizeAnimatedText(
             'Welcome Back',
-            textStyle: GoogleFonts.poppins(fontSize: 40),
+            textStyle: GoogleFonts.poppins(
+              fontSize: isPortrait ? 40.sp : 28.sp,
+            ),
             speed: const Duration(milliseconds: 1200),
             colors: [Colors.blue, Colors.purple, Colors.pink],
           ),
@@ -102,63 +108,77 @@ class LoginscreenView extends GetView<LoginscreenController> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
-    IconData? icon,
     bool isPassword = false,
     bool isObscure = false,
+    required bool isPortrait,
     VoidCallback? toggleObscure,
   }) {
     return Container(
-      height: _fieldHeight,
+      height: 50.h,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(10.r),
       ),
       child: TextField(
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: isPortrait ? 14.sp : 8.sp,
+        ),
         textAlignVertical: TextAlignVertical.center,
         controller: controller,
         obscureText: isPassword ? isObscure : false,
         decoration: InputDecoration(
-          prefixIcon: icon != null ? Icon(icon, color: Colors.white70) : null,
+          prefixIcon: isPassword == false
+              ? Icon(
+                  Icons.email_outlined,
+                  color: Colors.white70,
+                  size: isPortrait ? 20.sp : 10.sp,
+                )
+              : null,
           suffixIcon: isPassword
               ? GestureDetector(
                   onTap: toggleObscure,
                   child: Icon(
                     isObscure ? Icons.visibility : Icons.visibility_off,
                     color: Colors.white70,
+                    size: isPortrait ? 20.sp : 10.sp,
                   ),
                 )
               : null,
           hintStyle: GoogleFonts.poppins(
             color: Colors.white54,
             fontWeight: FontWeight.w300,
+            fontSize: isPortrait ? 14.sp : 8.sp,
           ),
           hintText: hint,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16.w,
+            vertical: isPortrait ? 14.sp : 4.sp,
+          ),
         ),
       ),
     );
   }
 
   /// Login Button
-  Widget _loginButton() {
+  Widget _loginButton({required bool isPortrait}) {
     return ZoomTapAnimation(
       onTap: controller.loginProccess,
       child: Container(
-        height: _fieldHeight,
-        width: double.infinity,
+        height: 50.h,
+        width: 1.sw,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [Colors.blue, Colors.purple],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           boxShadow: [
             BoxShadow(
               color: Colors.blue.withOpacity(0.3),
-              blurRadius: 10,
+              blurRadius: 10.r,
               offset: const Offset(0, 4),
             ),
           ],
@@ -168,7 +188,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
             "Login",
             style: GoogleFonts.poppins(
               color: Colors.white,
-              fontSize: 18,
+              fontSize: isPortrait ? 14.sp : 8.sp,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -178,39 +198,26 @@ class LoginscreenView extends GetView<LoginscreenController> {
   }
 
   /// Signup Text
-  Widget _signupText() {
+  Widget _signupText({required bool isPortrait}) {
     return RichText(
       text: TextSpan(
         text: "Don’t have an account? ",
-        style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
+        style: GoogleFonts.poppins(
+          color: Colors.white70,
+          fontSize: isPortrait ? 14.sp : 8.sp,
+        ),
         children: [
           TextSpan(
             text: "Sign up",
             style: GoogleFonts.poppins(
               color: Colors.blueAccent,
-              fontSize: 15,
+              fontSize: isPortrait ? 14.sp : 8.sp,
               fontWeight: FontWeight.w600,
             ),
             recognizer: TapGestureRecognizer()
               ..onTap = () => Get.toNamed(Routes.SIGNUP),
           ),
         ],
-      ),
-    );
-  }
-
-  /// Forgot Password
-  Widget _forgotPasswordText() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: TextButton(
-        onPressed: () {
-          // TODO: Forgot password logic
-        },
-        child: Text(
-          "Forgot Password?",
-          style: GoogleFonts.poppins(color: Colors.white70, fontSize: 14),
-        ),
       ),
     );
   }
