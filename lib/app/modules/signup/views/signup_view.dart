@@ -18,75 +18,84 @@ class SignupView extends GetView<SignupController> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      body: Container(
-        width: size.width,
-        height: size.height,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        decoration: BoxDecoration(
-          gradient: AppColors.backGroundGradientBlack(),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _topTitle(),
-                const SizedBox(height: 40),
-                _inputField(
-                  controller: controller.emailController,
-                  hint: "Email",
-                  icon: Icons.email_outlined,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 20),
-                Obx(
-                  () => _inputField(
-                    controller: controller.passwordController,
-                    hint: "Password",
-                    icon: Icons.lock_outline,
-                    obscureText: controller.isObsecure.value,
-                    suffix: ZoomTapAnimation(
-                      onTap: () => controller.obsecureUpdater(
-                        value: !controller.isObsecure.value,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isLandscape = constraints.maxWidth > constraints.maxHeight;
+          final horizontalPadding = isLandscape
+              ? constraints.maxWidth * 0.2
+              : 24.0;
+          final verticalSpacing = isLandscape ? 20.0 : 40.0;
+
+          return Container(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            decoration: BoxDecoration(
+              gradient: AppColors.backGroundGradientBlack(),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: 500),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _topTitle(isLandscape: isLandscape),
+                      SizedBox(height: verticalSpacing),
+                      _inputField(
+                        controller: controller.emailController,
+                        hint: "Email",
+                        icon: Icons.email_outlined,
+                        keyboardType: TextInputType.emailAddress,
                       ),
-                      child: Icon(
-                        controller.isObsecure.value
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.white70,
+                      SizedBox(height: verticalSpacing / 2),
+                      Obx(
+                        () => _inputField(
+                          controller: controller.passwordController,
+                          hint: "Password",
+                          icon: Icons.lock_outline,
+                          obscureText: controller.isObsecure.value,
+                          suffix: ZoomTapAnimation(
+                            onTap: () => controller.obsecureUpdater(
+                              value: !controller.isObsecure.value,
+                            ),
+                            child: Icon(
+                              controller.isObsecure.value
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(height: verticalSpacing / 2),
+                      _roleSelector(),
+                      SizedBox(height: verticalSpacing),
+                      Obx(
+                        () => controller.isSigningUp.value
+                            ? const SpinKitPulse(color: Colors.white, size: 40)
+                            : _signupButton(),
+                      ),
+                      SizedBox(height: verticalSpacing),
+                      _signupText(),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                _roleSelector(),
-                const SizedBox(height: 30),
-                Obx(
-                  () => controller.isSigningUp.value
-                      ? const SpinKitPulse(color: Colors.white, size: 40)
-                      : _signupButton(),
-                ),
-                const SizedBox(height: 30),
-                _signupText(),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  /// ----------------------------
-  /// Widgets
-  /// ----------------------------
-
-  Widget _topTitle() {
+  Widget _topTitle({bool isLandscape = false}) {
     return SizedBox(
       child: DefaultTextStyle(
         textAlign: TextAlign.center,
         style: GoogleFonts.poppins(
-          fontSize: 36,
+          fontSize: isLandscape ? 28 : 36,
           fontWeight: FontWeight.w600,
           color: Colors.white,
         ),
@@ -94,7 +103,7 @@ class SignupView extends GetView<SignupController> {
           animatedTexts: [
             ColorizeAnimatedText(
               'Sign up to NextCheck',
-              textStyle: GoogleFonts.poppins(fontSize: 36),
+              textStyle: GoogleFonts.poppins(fontSize: isLandscape ? 28 : 36),
               speed: const Duration(milliseconds: 1000),
               colors: [Colors.blue, Colors.purple, Colors.pink],
             ),
@@ -132,7 +141,10 @@ class SignupView extends GetView<SignupController> {
             fontWeight: FontWeight.w300,
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 14,
+            horizontal: 12,
+          ),
         ),
       ),
     );

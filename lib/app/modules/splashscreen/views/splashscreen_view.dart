@@ -13,7 +13,6 @@ class SplashscreenView extends GetView<SplashscreenController> {
   @override
   Widget build(BuildContext context) {
     Timer(Duration(seconds: 2), () {
-      // controller.checkLoginStatus();
       Get.offNamed(Routes.LOGINSCREEN);
     });
     return Scaffold(
@@ -25,12 +24,12 @@ class SplashscreenView extends GetView<SplashscreenController> {
             colors: [
               Color.fromARGB(255, 2, 33, 48),
               Colors.black,
-              // Colors.blueGrey.shade900,
+
               Color.fromARGB(255, 2, 33, 48),
             ],
           ),
         ),
-        // color: AppColors.modernBlue,
+
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: Stack(
@@ -46,8 +45,8 @@ class SplashscreenView extends GetView<SplashscreenController> {
                   SlideTransition(
                     position:
                         Tween<Offset>(
-                          begin: Offset(0, 1), // Start position (bottom)
-                          end: Offset.zero, // End position (center)
+                          begin: Offset(0, 1),
+                          end: Offset.zero,
                         ).animate(
                           CurvedAnimation(
                             curve: Curves.fastLinearToSlowEaseIn,
@@ -60,7 +59,6 @@ class SplashscreenView extends GetView<SplashscreenController> {
                       child: Image.asset(
                         'assets/logo/nextcheck.png',
                         height: 250,
-                        // colorBlendMode: BlendMode.colorBurn,
                       ),
                     ),
                   ),

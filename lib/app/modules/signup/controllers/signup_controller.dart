@@ -25,7 +25,6 @@ class SignupController extends GetxController {
     register(emailController.text, passwordController.text, role.value);
   }
 
-  // Signup with role
   Future<void> register(String email, String password, String role) async {
     isSigningUp.value = true;
     update();
@@ -37,7 +36,7 @@ class SignupController extends GetxController {
 
       await _db.collection("users").doc(userCred.user!.uid).set({
         "email": email,
-        "role": role, // "host" or "participant"
+        "role": role,
         "createdAt": DateTime.now(),
       });
       CustomWidget.successAlert2(message: "Sign up successful!");

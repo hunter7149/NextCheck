@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,21 +7,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:latlong2/latlong.dart' hide LatLng;
+import 'package:google_fonts/google_fonts.dart';
 import 'package:next_check/app/Widgets/customwidgets.dart';
 import 'package:next_check/app/data/strings/appstring.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class CreatepointController extends GetxController {
   RxSet<Marker> markers = <Marker>{}.obs;
+  RxSet<Circle> circles = <Circle>{}.obs;
   LatLng? selectedLocation;
 
   void setMarker(LatLng latLng) async {
     selectedLocation = latLng;
 
-    // Update marker
     markers.value = {
       Marker(
         markerId: MarkerId('active_point'),
@@ -29,14 +29,14 @@ class CreatepointController extends GetxController {
       ),
     };
 
-    // Move camera to new marker
+    circles.clear();
+
     if (gcontroller.isCompleted) {
       final GoogleMapController mapController = await gcontroller.future;
       mapController.animateCamera(CameraUpdate.newLatLng(latLng));
     }
   }
 
-  // Controller for radius input
   TextEditingController radiusController = TextEditingController();
   late Completer<GoogleMapController> gcontroller =
       Completer<GoogleMapController>();
@@ -47,7 +47,6 @@ class CreatepointController extends GetxController {
   RxString address = "".obs;
   RxBool isLocationLoading = false.obs;
 
-  // Checks and requests location permission using geolocator
   Future<void> permissionchecker() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.always ||
@@ -58,13 +57,11 @@ class CreatepointController extends GetxController {
     }
   }
 
-  // Gets the current location using geolocator
   Future<void> getlocation() async {
     isLocationLoading(true);
 
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Optionally prompt user to enable location services
       isLocationLoading(false);
       return;
     }
@@ -98,8 +95,6 @@ class CreatepointController extends GetxController {
       target: LatLng(lattitude.value, longitude.value),
       zoom: 12.0,
     );
-
-    // updateMapWithInitialPosition();
   }
 
   userconsent() {
@@ -226,7 +221,7 @@ class CreatepointController extends GetxController {
   }
 
   void updateMapWithInitialPosition() async {
-    if (initialCameraPosition.value != null && !gcontroller.isCompleted) {
+    if (initialCameraPosition.value != null && gcontroller.isCompleted) {
       final GoogleMapController mapController = await gcontroller.future;
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(initialCameraPosition.value!),
@@ -235,31 +230,66 @@ class CreatepointController extends GetxController {
   }
 
   RxBool isLocationSetting = false.obs;
+
   Future<void> createActiveCheckinPoint(LatLng location, double radius) async {
     isLocationSetting(true);
     try {
-      // Get the current host UID
       String hostId = FirebaseAuth.instance.currentUser!.uid;
 
-      // Write to Firestore singleton document
-      await FirebaseFirestore.instance
-          .doc('meta/active_checkin_point') // singleton document
-          .set({
-            'hostId': hostId,
-            'latitude': location.latitude,
-            'longitude': location.longitude,
-            'radius': radius,
-            'createdAt': FieldValue.serverTimestamp(),
-            'active': true,
-          });
+      await FirebaseFirestore.instance.doc('meta/active_checkin_point').set({
+        'hostId': hostId,
+        'latitude': location.latitude,
+        'longitude': location.longitude,
+        'radius': radius,
+        'createdAt': FieldValue.serverTimestamp(),
+        'active': true,
+      });
+
+      markers.value = {
+        Marker(
+          markerId: MarkerId('active_point'),
+          position: location,
+          infoWindow: InfoWindow(title: 'Active Check-in Point'),
+        ),
+      };
+
+      circles.value = {
+        Circle(
+          circleId: CircleId('checkin_radius'),
+          center: location,
+          radius: radius,
+          strokeWidth: 2,
+          strokeColor: Colors.deepOrange,
+          fillColor: Colors.deepOrange.withOpacity(0.2),
+        ),
+      };
+
+      if (gcontroller.isCompleted) {
+        final GoogleMapController mapController = await gcontroller.future;
+
+        final bounds = LatLngBounds(
+          southwest: LatLng(
+            location.latitude - radius / 111000,
+            location.longitude -
+                radius / (111000 * (cos(location.latitude * pi / 180))),
+          ),
+          northeast: LatLng(
+            location.latitude + radius / 111000,
+            location.longitude +
+                radius / (111000 * (cos(location.latitude * pi / 180))),
+          ),
+        );
+
+        mapController.animateCamera(CameraUpdate.newLatLngBounds(bounds, 50));
+      }
 
       CustomWidget.successAlert2(
         message: "Check-in point created successfully",
       );
     } catch (e) {
       CustomWidget.errorAlert(
-        title: "Opps",
-        message: "Failed to create checkin point",
+        title: "Oops",
+        message: "Failed to create check-in point",
       );
     }
     isLocationSetting(false);
@@ -275,15 +305,5 @@ class CreatepointController extends GetxController {
   void onInit() async {
     super.onInit();
     await requestMap();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
   }
 }

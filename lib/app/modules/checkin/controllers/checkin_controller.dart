@@ -1,52 +1,54 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:next_check/app/Widgets/customwidgets.dart';
 import 'package:next_check/app/data/strings/appstring.dart';
+import 'package:next_check/app/modules/checkin/isolate/checkin_isolate.dart';
 import 'package:zoom_tap_animation/zoom_tap_animation.dart';
 
 class CheckinController extends GetxController with WidgetsBindingObserver {
-  // Map controller
   late Completer<GoogleMapController> gcontroller =
       Completer<GoogleMapController>();
   Rx<CameraPosition?> initialCameraPosition = Rx<CameraPosition?>(null);
   RxBool isMapLoading = true.obs;
 
-  // User location
   RxDouble lattitude = 0.0.obs;
   RxDouble longitude = 0.0.obs;
   RxString address = "".obs;
   RxBool isLocationLoading = false.obs;
 
-  // Participant logic
   RxSet<Marker> markers = <Marker>{}.obs;
   RxSet<Circle> circles = <Circle>{}.obs;
   RxInt liveCount = 0.obs;
   RxBool isCheckedIn = false.obs;
   LatLng? activePointLocation;
   double activeRadius = 0.0;
-  RxDouble distanceFromActive = 0.0.obs; // Distance in meters
+  RxDouble distanceFromActive = 0.0.obs;
 
   StreamSubscription<DocumentSnapshot>? activePointSubscription;
   StreamSubscription<QuerySnapshot>? checkinCountSubscription;
   StreamSubscription<Position>? positionStream;
 
-  // ---------------- Lifecycle ----------------
+  RxBool cameraMovedToActivePoint = false.obs;
+
   @override
   void onInit() async {
     super.onInit();
     WidgetsBinding.instance.addObserver(this);
+
     await requestMap();
+    await validateUserCheckinStatus();
+
     _listenActiveCheckinPoint();
+    _fetchUserCheckinStatus();
     _listenLiveCheckinCount();
     _startForegroundLocationStream();
-    _checkActivePointOnStartup();
   }
 
   @override
@@ -58,7 +60,13 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
-  // ---------------- Location Methods ----------------
+  bool _screenIsActive = true;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _screenIsActive = state == AppLifecycleState.resumed;
+  }
+
   Future<void> permissionchecker() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.always ||
@@ -69,7 +77,6 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  RxBool cameraMovedToActivePoint = false.obs;
   Future<void> getlocation() async {
     isLocationLoading(true);
 
@@ -96,7 +103,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
       lattitude.value = position.latitude;
       longitude.value = position.longitude;
     } catch (e) {
-      print(e);
+      print("Location error: $e");
       lattitude.value = 0.0;
       longitude.value = 0.0;
     }
@@ -104,7 +111,6 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
 
     address.value = "${lattitude.value},${longitude.value}";
 
-    // Move camera **only once** to active point
     if (activePointLocation != null && !cameraMovedToActivePoint.value) {
       final GoogleMapController mapController = await gcontroller.future;
       mapController.animateCamera(
@@ -115,7 +121,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
       cameraMovedToActivePoint.value = true;
     }
 
-    _updateDistanceFromActive();
+    updateDistanceFromActive();
   }
 
   userconsent() {
@@ -144,10 +150,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
                 Expanded(
                   child: Text(
                     "Prominent Disclosure for Next Check",
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      color: Colors.white,
-                    ),
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
                     textAlign: TextAlign.start,
                   ),
                 ),
@@ -155,13 +158,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
                   onTap: () => Get.back(),
                   child: Container(
                     padding: EdgeInsets.all(5),
-                    child: Center(
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.red.shade800,
-                        size: 20,
-                      ),
-                    ),
+                    child: const Icon(Icons.close, color: Colors.red, size: 20),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(100),
@@ -170,23 +167,23 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
                 ),
               ],
             ),
-            content: Container(
+            content: SizedBox(
               height: MediaQuery.of(Get.context!).size.height / 1.5,
               width: double.maxFinite,
               child: SingleChildScrollView(
                 child: Center(
                   child: Text(
                     Appstring.prominentDisclosure,
-                    style: GoogleFonts.poppins(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 16),
                     textAlign: TextAlign.start,
                   ),
                 ),
               ),
             ),
-            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            actionsPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
             actions: [
               Row(
                 children: [
@@ -200,14 +197,14 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
                           borderRadius: BorderRadius.circular(2),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Decline",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Expanded(
                     child: InkWell(
                       onTap: () async {
@@ -221,7 +218,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
                           borderRadius: BorderRadius.circular(2),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Allow",
                           style: TextStyle(color: Colors.white),
                         ),
@@ -237,7 +234,6 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
     );
   }
 
-  // ---------------- Participant logic ----------------
   void _listenActiveCheckinPoint() {
     activePointSubscription = FirebaseFirestore.instance
         .doc('meta/active_checkin_point')
@@ -251,7 +247,6 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
           );
           activeRadius = (data['radius'] as num).toDouble();
 
-          // Marker for active check-in point
           markers.value = {
             Marker(
               markerId: const MarkerId('active_point'),
@@ -260,7 +255,6 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
             ),
           };
 
-          // Circle showing radius
           circles.value = {
             Circle(
               circleId: const CircleId('active_radius'),
@@ -277,7 +271,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
             zoom: 15.0,
           );
 
-          _updateDistanceFromActive();
+          updateDistanceFromActive();
         });
   }
 
@@ -291,7 +285,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
         });
   }
 
-  double _distanceToActivePoint() {
+  double distanceToActivePoint() {
     if (activePointLocation == null) return double.infinity;
     return Geolocator.distanceBetween(
       lattitude.value,
@@ -301,12 +295,24 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
     );
   }
 
-  void _updateDistanceFromActive() {
-    distanceFromActive.value = _distanceToActivePoint();
+  double distanceToActivePointFrom(double lat, double lng) {
+    if (activePointLocation == null) return double.infinity;
+    return Geolocator.distanceBetween(
+      lat,
+      lng,
+      activePointLocation!.latitude,
+      activePointLocation!.longitude,
+    );
+  }
+
+  void updateDistanceFromActive() {
+    distanceFromActive.value = distanceToActivePoint();
   }
 
   Future<void> checkIn() async {
-    _updateDistanceFromActive();
+    await getlocation();
+    updateDistanceFromActive();
+
     if (distanceFromActive.value > activeRadius) {
       CustomWidget.errorAlert(
         title: "Sorry",
@@ -314,6 +320,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
       );
       return;
     }
+
     String uid = FirebaseAuth.instance.currentUser!.uid;
     await FirebaseFirestore.instance.collection('checkins').doc(uid).set({
       'userId': uid,
@@ -321,48 +328,139 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
       'isActive': true,
       'lastLat': lattitude.value,
       'lastLng': longitude.value,
-    });
+    }, SetOptions(merge: true));
+
     isCheckedIn.value = true;
     CustomWidget.successAlert2(message: "Checked in successfully");
   }
 
-  Future<void> autoCheckOut() async {
-    _updateDistanceFromActive();
-    if (!isCheckedIn.value) return;
+  autoCheckOut() async {
+    print("Caling autocheckout");
+    if (!isCheckedIn.value || !_screenIsActive) return;
+
+    updateDistanceFromActive();
     if (distanceFromActive.value > activeRadius) {
       String uid = FirebaseAuth.instance.currentUser!.uid;
       await FirebaseFirestore.instance.collection('checkins').doc(uid).update({
         'isActive': false,
       });
       isCheckedIn.value = false;
-      // Get.snackbar('Info', 'You have been automatically checked out.');
       CustomWidget.successAlert2(
         message: 'You have been automatically checked out.',
       );
     }
   }
 
-  void _startForegroundLocationStream() {
+  Future<void> validateUserCheckinStatus() async {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    DocumentSnapshot userCheckinDoc = await FirebaseFirestore.instance
+        .collection('checkins')
+        .doc(uid)
+        .get();
+
+    if (!userCheckinDoc.exists) {
+      isCheckedIn.value = false;
+      return;
+    }
+
+    final data = userCheckinDoc.data() as Map<String, dynamic>;
+
+    bool active = (data['isActive'] as bool?) ?? false;
+
+    if (!active) {
+      isCheckedIn.value = false;
+      return;
+    }
+
+    double lastLat = (data['lastLat'] as num?)?.toDouble() ?? 0;
+    double lastLng = (data['lastLng'] as num?)?.toDouble() ?? 0;
+
+    double distance = distanceToActivePointFrom(lastLat, lastLng);
+
+    Timestamp? checkedInAt = data['checkedInAt'] as Timestamp?;
+    bool expired = false;
+    if (checkedInAt != null) {
+      expired = DateTime.now().difference(checkedInAt.toDate()).inHours > 12;
+    } else {
+      expired = false;
+    }
+
+    if (distance > activeRadius || expired) {
+      await FirebaseFirestore.instance.collection('checkins').doc(uid).update({
+        'isActive': false,
+      });
+
+      isCheckedIn.value = false;
+    } else {
+      isCheckedIn.value = true;
+
+      lattitude.value = lastLat;
+      longitude.value = lastLng;
+      updateDistanceFromActive();
+    }
+  }
+
+  void _startForegroundLocationStream() async {
+    final receivePort = ReceivePort();
+    await Isolate.spawn(calculateDistanceIsolate, receivePort.sendPort);
+    final SendPort sendPort = await receivePort.first as SendPort;
+
     positionStream =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.high,
           ),
-        ).listen((position) {
+        ).listen((position) async {
           lattitude.value = position.latitude;
           longitude.value = position.longitude;
-          _updateDistanceFromActive();
+
+          final responsePort = ReceivePort();
+          sendPort.send({
+            'userLat': lattitude.value,
+            'userLng': longitude.value,
+            'activeLat': activePointLocation?.latitude ?? 0,
+            'activeLng': activePointLocation?.longitude ?? 0,
+            'replyTo': responsePort.sendPort,
+          });
+
+          distanceFromActive.value = await responsePort.first as double;
+
           autoCheckOut();
         });
   }
 
   void _checkActivePointOnStartup() async {
     await getlocation();
-    _updateDistanceFromActive();
+    updateDistanceFromActive();
     autoCheckOut();
   }
 
-  requestMap() async {
+  Future<void> _fetchUserCheckinStatus() async {
+    try {
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('checkins')
+          .doc(uid)
+          .get();
+
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        isCheckedIn.value = data['isActive'] ?? false;
+
+        updateDistanceFromActive();
+        if (distanceFromActive.value > activeRadius && isCheckedIn.value) {
+          await autoCheckOut();
+        }
+      } else {
+        isCheckedIn.value = false;
+      }
+    } catch (e) {
+      print("Error fetching user check-in status: $e");
+      isCheckedIn.value = false;
+    }
+  }
+
+  Future<void> requestMap() async {
     await permissionchecker();
     await getlocation();
     isMapLoading(false);

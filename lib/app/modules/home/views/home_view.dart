@@ -25,12 +25,10 @@ class HomeView extends GetView<HomeController> {
         child: SafeArea(
           child: Stack(
             children: [
-              // Responsive main content
               Center(
                 child: OrientationBuilder(
                   builder: (context, orientation) {
                     if (orientation == Orientation.portrait) {
-                      // 📱 Portrait layout
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -42,7 +40,6 @@ class HomeView extends GetView<HomeController> {
                         ],
                       );
                     } else {
-                      // 💻 Landscape layout
                       return Row(
                         children: [
                           Expanded(
@@ -52,7 +49,7 @@ class HomeView extends GetView<HomeController> {
                           Expanded(
                             flex: 1,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 const _TitleAndSlogan(),
                                 const SizedBox(height: 32),
@@ -67,7 +64,6 @@ class HomeView extends GetView<HomeController> {
                 ),
               ),
 
-              // 🔹 User info always top-right
               Positioned(top: 16, right: 16, child: const _UserSection()),
             ],
           ),
@@ -112,10 +108,13 @@ class _UserSection extends GetView<HomeController> {
             controller.auth.signOut();
             Get.offAllNamed(Routes.LOGINSCREEN);
           },
-          child: const Icon(
-            CupertinoIcons.power,
-            color: Colors.deepOrange,
-            size: 28,
+          child: Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text("Sign out", style: TextStyle(color: Colors.deepOrange)),
           ),
         ),
       ],
@@ -129,7 +128,7 @@ class _AnimatedLogo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final logoSize = size.shortestSide * 0.5; // adapts to portrait/landscape
+    final logoSize = size.shortestSide * 0.5;
 
     return ZoAnimatedGradientBorder(
       borderRadius: logoSize / 2,
@@ -193,7 +192,7 @@ class _ActionsSection extends GetView<HomeController> {
                   onTap: () => Get.toNamed(Routes.CREATEPOINT),
                 ),
                 _ActionButton(
-                  label: "Active Users",
+                  label: "Active Participants",
                   onTap: () => Get.toNamed(Routes.ACTIVEUSERS),
                 ),
                 _ActionButton(

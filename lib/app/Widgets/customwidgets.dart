@@ -355,21 +355,18 @@ class CustomWidget {
     }
   }
 
-  static commonBackButton() {
+  static commonBackButton({VoidCallback? onTap}) {
     return ZoomTapAnimation(
-      onTap: () {
-        Get.back();
-      },
+      onTap: onTap ?? () => Get.back(),
       child: Container(
-        // alignment: Alignment.center,
-        margin: EdgeInsets.only(left: 10, top: 2),
+        margin: const EdgeInsets.only(left: 10, top: 2),
         height: 50,
         width: 50,
         decoration: BoxDecoration(
           color: Colors.black87,
           borderRadius: BorderRadius.circular(100),
         ),
-        child: Center(
+        child: const Center(
           child: Icon(Icons.arrow_back, size: 30, color: Colors.white),
         ),
       ),

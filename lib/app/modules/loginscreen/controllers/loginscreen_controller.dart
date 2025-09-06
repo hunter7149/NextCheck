@@ -25,11 +25,9 @@ class LoginscreenController extends GetxController {
     login(emailController.text, passwordController.text);
   }
 
-  // Login
   Future<void> login(String email, String password) async {
     isSigning.value = true;
     try {
-      // Sign in with FirebaseAuth
       UserCredential userCred = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password.trim(),
@@ -37,7 +35,6 @@ class LoginscreenController extends GetxController {
 
       String uid = userCred.user!.uid;
 
-      // Fetch user data from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(uid)
@@ -51,10 +48,9 @@ class LoginscreenController extends GetxController {
         return;
       }
 
-      String role = userDoc['role'] ?? 'participant'; // default fallback
+      String role = userDoc['role'] ?? 'participant';
       String? emailAddr = userCred.user?.email;
 
-      // Navigate based on role
       if (role == 'host') {
         Get.offAllNamed(
           Routes.HOME,

@@ -14,7 +14,7 @@ class HomeController extends GetxController {
   }
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-  // Logout
+
   Future<void> logout() async {
     await auth.signOut();
   }
@@ -22,7 +22,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Retrieve arguments passed from the login page
+
     final args = Get.arguments as Map<String, dynamic>?;
 
     setUserInfo(userInfo: args ?? {});

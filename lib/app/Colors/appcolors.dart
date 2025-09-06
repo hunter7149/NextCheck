@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   static Color mainBgPink = Color.fromARGB(255, 186, 149, 253);
   static Color mainBgBlue = Color.fromARGB(255, 149, 249, 252);
+  static Color mainBgColor = Colors.black12;
 
   static List<Color> mainBackgroud = [
     mainBgPink.withAlpha(200),

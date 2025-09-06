@@ -79,7 +79,6 @@ class LoginscreenView extends GetView<LoginscreenController> {
     );
   }
 
-  /// Top Welcome Title
   Widget _topTitle({required bool isPortrait}) {
     return DefaultTextStyle(
       textAlign: TextAlign.center,
@@ -104,7 +103,6 @@ class LoginscreenView extends GetView<LoginscreenController> {
     );
   }
 
-  /// Text Field Builder
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
@@ -161,7 +159,6 @@ class LoginscreenView extends GetView<LoginscreenController> {
     );
   }
 
-  /// Login Button
   Widget _loginButton({required bool isPortrait}) {
     return ZoomTapAnimation(
       onTap: controller.loginProccess,
@@ -197,7 +194,6 @@ class LoginscreenView extends GetView<LoginscreenController> {
     );
   }
 
-  /// Signup Text
   Widget _signupText({required bool isPortrait}) {
     return RichText(
       text: TextSpan(
