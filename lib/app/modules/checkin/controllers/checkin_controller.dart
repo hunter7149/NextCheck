@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -37,35 +38,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
 
   RxBool cameraMovedToActivePoint = false.obs;
 
-  @override
-  void onInit() async {
-    super.onInit();
-    WidgetsBinding.instance.addObserver(this);
-
-    await requestMap();
-    await validateUserCheckinStatus();
-
-    _listenActiveCheckinPoint();
-    _fetchUserCheckinStatus();
-    _listenLiveCheckinCount();
-    _startForegroundLocationStream();
-  }
-
-  @override
-  void onClose() {
-    activePointSubscription?.cancel();
-    checkinCountSubscription?.cancel();
-    positionStream?.cancel();
-    WidgetsBinding.instance.removeObserver(this);
-    super.onClose();
-  }
-
   bool _screenIsActive = true;
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    _screenIsActive = state == AppLifecycleState.resumed;
-  }
 
   Future<void> permissionchecker() async {
     LocationPermission permission = await Geolocator.checkPermission();
@@ -80,48 +53,54 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
   Future<void> getlocation() async {
     isLocationLoading(true);
 
+    // Check if GPS is enabled
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       isLocationLoading(false);
+      print("Location services are disabled.");
       return;
     }
 
+    // Check permissions
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission != LocationPermission.always &&
-          permission != LocationPermission.whileInUse) {
-        isLocationLoading(false);
-        return;
-      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // User has permanently denied permissions
+      isLocationLoading(false);
+      print("Location permission denied forever. Redirecting to settings.");
+      await Geolocator.openAppSettings();
+      return;
+    }
+
+    if (permission != LocationPermission.always &&
+        permission != LocationPermission.whileInUse) {
+      isLocationLoading(false);
+      print("Location permission not granted.");
+      return;
     }
 
     try {
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        desiredAccuracy: LocationAccuracy.best,
       );
       lattitude.value = position.latitude;
       longitude.value = position.longitude;
+      print("Latitude: ${lattitude.value}, Longitude: ${longitude.value}");
     } catch (e) {
-      print("Location error: $e");
+      print("Error getting location: $e");
       lattitude.value = 0.0;
       longitude.value = 0.0;
     }
+
     isLocationLoading(false);
 
     address.value = "${lattitude.value},${longitude.value}";
 
-    if (activePointLocation != null && !cameraMovedToActivePoint.value) {
-      final GoogleMapController mapController = await gcontroller.future;
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: activePointLocation!, zoom: 15.0),
-        ),
-      );
-      cameraMovedToActivePoint.value = true;
-    }
-
-    updateDistanceFromActive();
+    update();
   }
 
   userconsent() {
@@ -400,11 +379,7 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  void _startForegroundLocationStream() async {
-    final receivePort = ReceivePort();
-    await Isolate.spawn(calculateDistanceIsolate, receivePort.sendPort);
-    final SendPort sendPort = await receivePort.first as SendPort;
-
+  void _startForegroundLocationStream() {
     positionStream =
         Geolocator.getPositionStream(
           locationSettings: const LocationSettings(
@@ -414,25 +389,21 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
           lattitude.value = position.latitude;
           longitude.value = position.longitude;
 
-          final responsePort = ReceivePort();
-          sendPort.send({
-            'userLat': lattitude.value,
-            'userLng': longitude.value,
-            'activeLat': activePointLocation?.latitude ?? 0,
-            'activeLng': activePointLocation?.longitude ?? 0,
-            'replyTo': responsePort.sendPort,
-          });
+          if (activePointLocation != null) {
+            final result = await compute(calculateDistance, {
+              'userLat': lattitude.value,
+              'userLng': longitude.value,
+              'activeLat': activePointLocation!.latitude,
+              'activeLng': activePointLocation!.longitude,
+            });
 
-          distanceFromActive.value = await responsePort.first as double;
+            distanceFromActive.value = result;
+          } else {
+            distanceFromActive.value = double.infinity;
+          }
 
           autoCheckOut();
         });
-  }
-
-  void _checkActivePointOnStartup() async {
-    await getlocation();
-    updateDistanceFromActive();
-    autoCheckOut();
   }
 
   Future<void> _fetchUserCheckinStatus() async {
@@ -462,7 +433,35 @@ class CheckinController extends GetxController with WidgetsBindingObserver {
 
   Future<void> requestMap() async {
     await permissionchecker();
-    await getlocation();
+    // await getlocation();
     isMapLoading(false);
+  }
+
+  @override
+  void onInit() async {
+    super.onInit();
+    WidgetsBinding.instance.addObserver(this);
+
+    await requestMap();
+    await validateUserCheckinStatus();
+
+    _listenActiveCheckinPoint();
+    _fetchUserCheckinStatus();
+    _listenLiveCheckinCount();
+    _startForegroundLocationStream();
+  }
+
+  @override
+  void onClose() {
+    activePointSubscription?.cancel();
+    checkinCountSubscription?.cancel();
+    positionStream?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _screenIsActive = state == AppLifecycleState.resumed;
   }
 }

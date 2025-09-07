@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
@@ -25,7 +26,8 @@ class HomeView extends GetView<HomeController> {
         child: SafeArea(
           child: Stack(
             children: [
-              Center(
+              Container(
+   
                 child: OrientationBuilder(
                   builder: (context, orientation) {
                     if (orientation == Orientation.portrait) {
@@ -44,15 +46,25 @@ class HomeView extends GetView<HomeController> {
                         children: [
                           Expanded(
                             flex: 1,
-                            child: Center(child: const _AnimatedLogo()),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                               
+                             
+                                const _AnimatedLogo(),
+                                   SizedBox(height: 10.h),
+                                 const _TitleAndSlogan(),
+                              ],
+                            ),
                           ),
                           Expanded(
                             flex: 1,
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const _TitleAndSlogan(),
-                                const SizedBox(height: 32),
+                                                      
+                                
+                             
                                 _ActionsSection(),
                               ],
                             ),
@@ -68,6 +80,7 @@ class HomeView extends GetView<HomeController> {
             ],
           ),
         ),
+     
       ),
     );
   }

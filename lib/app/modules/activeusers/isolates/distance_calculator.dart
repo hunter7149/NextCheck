@@ -1,5 +1,4 @@
-import 'dart:isolate';
-
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 class ParticipantDistance {
@@ -16,32 +15,24 @@ class ParticipantDistance {
   });
 }
 
-// Top-level function for isolate
-void calculateDistances(SendPort sendPort) {
-  final port = ReceivePort();
-  sendPort.send(port.sendPort);
+List<ParticipantDistance> calculateDistances(Map<String, dynamic> args) {
+  final List<Map<String, dynamic>> participants =
+      (args['participants'] as List).cast<Map<String, dynamic>>();
+  final double activeLat = args['activeLat'];
+  final double activeLng = args['activeLng'];
 
-  port.listen((message) {
-    final List<Map<String, dynamic>> participants = message['participants'];
-    final double activeLat = message['activeLat'];
-    final double activeLng = message['activeLng'];
-    final SendPort replyTo = message['replyTo'];
-
-    final List<ParticipantDistance> result = participants.map((p) {
-      double distance = Geolocator.distanceBetween(
-        p['lat'],
-        p['lng'],
-        activeLat,
-        activeLng,
-      );
-      return ParticipantDistance(
-        id: p['id'],
-        lat: p['lat'],
-        lng: p['lng'],
-        distance: distance,
-      );
-    }).toList();
-
-    replyTo.send(result);
-  });
+  return participants.map((p) {
+    final distance = Geolocator.distanceBetween(
+      p['lat'] as double,
+      p['lng'] as double,
+      activeLat,
+      activeLng,
+    );
+    return ParticipantDistance(
+      id: p['id'] as String,
+      lat: p['lat'] as double,
+      lng: p['lng'] as double,
+      distance: distance,
+    );
+  }).toList();
 }

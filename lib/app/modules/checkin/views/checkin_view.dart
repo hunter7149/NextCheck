@@ -74,10 +74,10 @@ class CheckinView extends GetView<CheckinController> {
                       )
                     : Positioned(
                         right: 20.w,
-                        top: 60.h,
-                        bottom: 40.h,
+                        top: 20.h,
+                        bottom: 20.h,
                         child: SizedBox(
-                          width: 120.w,
+                          width: 140.w,
                           child: checkInSection(isPortrait: false),
                         ),
                       ),
@@ -201,7 +201,7 @@ class CheckinView extends GetView<CheckinController> {
   Widget _activeCheckins(bool isPortrait) => Column(
     children: [
       Container(
-        width: isPortrait ? 50.w : 40.w,
+        width: isPortrait ? 60.w : 40.w,
         height: isPortrait ? 50.w : 20.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
@@ -240,7 +240,7 @@ class CheckinView extends GetView<CheckinController> {
   Widget _distanceStat(bool isPortrait) => Column(
     children: [
       Container(
-        width: isPortrait ? 50.w : 40.w,
+        width: isPortrait ? 60.w : 40.w,
         height: isPortrait ? 50.w : 20.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
@@ -249,11 +249,11 @@ class CheckinView extends GetView<CheckinController> {
         child: Center(
           child: Text(
             controller.distanceFromActive.value >= 1000
-                ? "${(controller.distanceFromActive.value / 1000).toStringAsFixed(2)}"
+                ? "${(controller.distanceFromActive.value / 1000).toStringAsFixed(0)}"
                 : "${controller.distanceFromActive.value.toStringAsFixed(0)}",
             style: TextStyle(
               color: Colors.white,
-              fontSize: isPortrait ? 16.sp : 8.sp,
+              fontSize: isPortrait ? 14.sp : 8.sp,
               fontWeight: FontWeight.bold,
             ),
           ),

@@ -1,8 +1,8 @@
-import 'dart:isolate';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+
 import 'package:get/get.dart';
-import 'package:next_check/app/Widgets/customwidgets.dart';
+
 import 'package:next_check/app/modules/activeusers/isolates/distance_calculator.dart';
 
 class ActiveusersController extends GetxController {
@@ -88,27 +88,17 @@ class ActiveusersController extends GetxController {
     }
   }
 
-  Future<List<ParticipantDistance>> _computeParticipantDistances(
-    List<Map<String, dynamic>> participants,
-    double activeLat,
-    double activeLng,
-  ) async {
-    final receivePort = ReceivePort();
-    await Isolate.spawn(calculateDistances, receivePort.sendPort);
-
-    final sendPort = await receivePort.first as SendPort;
-    final responsePort = ReceivePort();
-
-    sendPort.send({
-      'participants': participants,
-      'activeLat': activeLat,
-      'activeLng': activeLng,
-      'replyTo': responsePort.sendPort,
-    });
-
-    final result = await responsePort.first as List<ParticipantDistance>;
-    return result;
-  }
+Future<List<ParticipantDistance>> _computeParticipantDistances(
+  List<Map<String, dynamic>> participants,
+  double activeLat,
+  double activeLng,
+) async {
+  return await compute(calculateDistances, {
+    'participants': participants,
+    'activeLat': activeLat,
+    'activeLng': activeLng,
+  });
+}
 
   @override
   void onInit() {

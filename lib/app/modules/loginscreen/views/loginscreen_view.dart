@@ -152,7 +152,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16.w,
-            vertical: isPortrait ? 14.sp : 4.sp,
+            vertical: isPortrait ? 14.sp : 3.sp,
           ),
         ),
       ),

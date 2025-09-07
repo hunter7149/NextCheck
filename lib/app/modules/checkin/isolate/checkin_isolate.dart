@@ -1,24 +1,27 @@
-import 'dart:isolate';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
-void calculateDistanceIsolate(SendPort sendPort) {
-  final port = ReceivePort();
-  sendPort.send(port.sendPort);
+/// Worker function (must be a top-level or static function)
+double calculateDistance(Map<String, double> coords) {
+  return Geolocator.distanceBetween(
+    coords['userLat']!,
+    coords['userLng']!,
+    coords['activeLat']!,
+    coords['activeLng']!,
+  );
+}
 
-  port.listen((message) {
-    final double userLat = message['userLat'];
-    final double userLng = message['userLng'];
-    final double activeLat = message['activeLat'];
-    final double activeLng = message['activeLng'];
-    final SendPort replyTo = message['replyTo'];
-
-    final double distance = Geolocator.distanceBetween(
-      userLat,
-      userLng,
-      activeLat,
-      activeLng,
-    );
-
-    replyTo.send(distance);
+/// Call this instead of manual isolate
+Future<double> calculateDistanceInIsolate({
+  required double userLat,
+  required double userLng,
+  required double activeLat,
+  required double activeLng,
+}) async {
+  return await compute(calculateDistance, {
+    'userLat': userLat,
+    'userLng': userLng,
+    'activeLat': activeLat,
+    'activeLng': activeLng,
   });
 }
