@@ -85,7 +85,9 @@ class CheckinView extends GetView<CheckinController> {
                 Positioned(
                   top: 10.h,
                   left: 0.w,
-                  child: CustomWidget.commonBackButton(
+                  child:
+                  
+                   CustomWidget.commonBackButton(
                     onTap: () async {
                       bool? confirm = await Get.dialog<bool>(
                         AlertDialog(
