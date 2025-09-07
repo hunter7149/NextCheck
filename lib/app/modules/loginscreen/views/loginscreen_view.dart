@@ -111,8 +111,13 @@ class LoginscreenView extends GetView<LoginscreenController> {
     required bool isPortrait,
     VoidCallback? toggleObscure,
   }) {
+      final fontSize = isPortrait ? 14.sp : 8.sp;
+  final verticalPadding = isPortrait ? 12.h : 6.h;
+
+  // Calculate container height to fit text + padding
+  final containerHeight = fontSize * 1.8 + verticalPadding * 2;
     return Container(
-      height: 50.h,
+      height: containerHeight,
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(10.r),
@@ -120,7 +125,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
       child: TextField(
         style: TextStyle(
           color: Colors.white,
-          fontSize: isPortrait ? 14.sp : 8.sp,
+          fontSize: fontSize,
         ),
         textAlignVertical: TextAlignVertical.center,
         controller: controller,
@@ -152,7 +157,7 @@ class LoginscreenView extends GetView<LoginscreenController> {
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(
             horizontal: 16.w,
-            vertical: isPortrait ? 14.sp : 3.sp,
+            vertical: isPortrait ? 6.sp : 3.5.sp,
           ),
         ),
       ),

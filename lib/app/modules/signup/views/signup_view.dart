@@ -58,7 +58,7 @@ class SignupView extends GetView<SignupController> {
                         controller: controller.passwordController,
                         isPortrait: isPortrait,
                         hint: "Password",
-                        icon: Icons.lock_outline,
+                        icon: Icons.password,
                         obscureText: controller.isObsecure.value,
                         suffix: ZoomTapAnimation(
                           onTap: () => controller.obsecureUpdater(
@@ -78,7 +78,7 @@ class SignupView extends GetView<SignupController> {
 
                     // Role selector
                     _roleSelector(isPortrait: isPortrait),
-                    SizedBox(height:isPortrait ? 20.h : 10.h),
+                    SizedBox(height:20.h),
 
                     // Signup button or loader
                     Obx(
@@ -86,7 +86,7 @@ class SignupView extends GetView<SignupController> {
                           ? const SpinKitPulse(color: Colors.white, size: 40)
                           : _signupButton(isPortrait: isPortrait),
                     ),
-                    SizedBox(height:isPortrait ? 20.h : 10.h ),
+                    SizedBox(height:20.h ),
 
                     // Text: Already have account
                     _signupText(isPortrait: isPortrait),
@@ -152,13 +152,13 @@ class SignupView extends GetView<SignupController> {
       keyboardType: keyboardType,
       style: TextStyle(color: Colors.white, fontSize: fontSize),
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.white70, size: fontSize + 6.sp),
+        prefixIcon: Icon(icon, color: Colors.white70, size: fontSize ),
         suffixIcon: suffix,
         hintText: hint,
         hintStyle: GoogleFonts.poppins(
           color: Colors.white54,
           fontWeight: FontWeight.w300,
-          fontSize: fontSize,
+          fontSize: fontSize-2,
         ),
         border: InputBorder.none,
         contentPadding: EdgeInsets.symmetric(
