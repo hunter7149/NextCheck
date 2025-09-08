@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:lottie/lottie.dart' hide Marker;
@@ -20,13 +21,17 @@ class CreatepointView extends GetView<CreatepointController> {
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: 1.sw,
-          height: 1.sh,
-          decoration: BoxDecoration(
-            gradient: AppColors.backGroundGradientBlack(),
-          ),
+      body: Container(
+        width: 1.sw,
+        height: 1.sh,
+        decoration: BoxDecoration(
+          gradient: AppColors.backGroundGradientBlack(),
+        ),
+        child: SafeArea(
+                top: T,
+        bottom: T,
+        left: F,
+        right: F,
           child: Obx(
             () => controller.initialCameraPosition.value == null
                 ? Column(
@@ -64,7 +69,7 @@ class CreatepointView extends GetView<CreatepointController> {
                                     .complete(mapController)),
                         ),
                       ),
-
+                
                       Positioned(
                         bottom: 20.h,
                         left: 20.w,
@@ -98,7 +103,7 @@ class CreatepointView extends GetView<CreatepointController> {
                                       );
                                       return;
                                     }
-
+                
                                     double? radius = await showDialog<double>(
                                       context: context,
                                       builder: (context) {
@@ -165,7 +170,7 @@ class CreatepointView extends GetView<CreatepointController> {
                                         );
                                       },
                                     );
-
+                
                                     if (radius != null && radius > 0) {
                                       await controller.createActiveCheckinPoint(
                                         controller.selectedLocation!,
@@ -192,7 +197,7 @@ class CreatepointView extends GetView<CreatepointController> {
                                 ),
                         ),
                       ),
-
+                
                       Positioned(
                         top: 10.h,
                         left: 0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:next_check/app/Colors/appcolors.dart';
@@ -19,13 +20,17 @@ class CheckinView extends GetView<CheckinController> {
         MediaQuery.of(context).orientation == Orientation.portrait;
 
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          height: 1.sh,
-          width: 1.sw,
-          decoration: BoxDecoration(
-            gradient: AppColors.backGroundGradientBlack(),
-          ),
+      body: Container(
+        height: 1.sh,
+        width: 1.sw,
+        decoration: BoxDecoration(
+          gradient: AppColors.backGroundGradientBlack(),
+        ),
+        child: SafeArea(
+                     top: T,
+        bottom: T,
+        left: F,
+        right: F,
           child: Obx(() {
             if (controller.initialCameraPosition.value == null ||
                 controller.isMapLoading.value) {
@@ -45,7 +50,7 @@ class CheckinView extends GetView<CheckinController> {
                 ],
               );
             }
-
+                
             return Stack(
               children: [
                 Positioned.fill(
@@ -64,7 +69,7 @@ class CheckinView extends GetView<CheckinController> {
                     },
                   ),
                 ),
-
+                
                 isPortrait
                     ? Positioned(
                         left: 20.w,
@@ -81,7 +86,7 @@ class CheckinView extends GetView<CheckinController> {
                           child: checkInSection(isPortrait: false),
                         ),
                       ),
-
+                
                 Positioned(
                   top: 10.h,
                   left: 0.w,
@@ -118,7 +123,7 @@ class CheckinView extends GetView<CheckinController> {
                           ],
                         ),
                       );
-
+                
                       if (confirm == true) {
                         await controller.autoCheckOut();
                         Get.back();

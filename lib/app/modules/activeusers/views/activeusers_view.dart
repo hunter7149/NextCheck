@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:next_check/app/Colors/appcolors.dart';
 import 'package:next_check/app/Widgets/customwidgets.dart';
@@ -16,13 +17,17 @@ class ActiveusersView extends GetView<ActiveusersController> {
     final isPortrait = media.orientation == Orientation.portrait;
 
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-          height: media.size.height,
-          width: media.size.width,
-          decoration: BoxDecoration(
-            gradient: AppColors.backGroundGradientBlack(),
-          ),
+      body: Container(
+        height: media.size.height,
+        width: media.size.width,
+        decoration: BoxDecoration(
+          gradient: AppColors.backGroundGradientBlack(),
+        ),
+        child: SafeArea(
+          top: T,
+          bottom: T,
+          left: F,
+          right: F,
           child: Stack(
             children: [
               Positioned(
